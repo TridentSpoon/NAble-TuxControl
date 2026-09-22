@@ -15,13 +15,17 @@ from pathlib import Path
 # so derivatives we haven't listed (most of them) still land correctly.
 _FAMILY_BY_ID = {
     "arch": "arch", "cachyos": "arch", "manjaro": "arch", "endeavouros": "arch",
-    "garuda": "arch", "artix": "arch", "archarm": "arch",
+    "garuda": "arch", "artix": "arch", "archarm": "arch", "parabola": "arch",
     "debian": "debian", "ubuntu": "debian", "linuxmint": "debian", "pop": "debian",
     "elementary": "debian", "zorin": "debian", "kali": "debian", "neon": "debian",
+    "raspbian": "debian", "deepin": "debian", "lmde": "debian",
     "fedora": "fedora", "rhel": "fedora", "centos": "fedora", "rocky": "fedora",
     "almalinux": "fedora", "nobara": "fedora", "ultramarine": "fedora",
     "opensuse": "suse", "opensuse-tumbleweed": "suse", "opensuse-leap": "suse",
     "sles": "suse", "suse": "suse",
+    "void": "void",
+    "solus": "solus",
+    "alpine": "alpine",
 }
 
 FAMILY_LABELS = {
@@ -29,6 +33,9 @@ FAMILY_LABELS = {
     "debian": "Debian/Ubuntu-based (apt)",
     "fedora": "Fedora/RHEL-based (dnf)",
     "suse": "openSUSE/SLES (zypper)",
+    "void": "Void Linux (xbps-install)",
+    "solus": "Solus (eopkg)",
+    "alpine": "Alpine Linux (apk)",
     "unknown": "Unknown package manager",
 }
 
@@ -89,7 +96,7 @@ class Distro:
             return "tested"
         if self.family in ("debian", "fedora"):
             return "family"
-        return "adapted"
+        return "adapted"  # pacman/zypper/void/solus/alpine/unknown
 
     def describe_support(self) -> str:
         level = self.support_level

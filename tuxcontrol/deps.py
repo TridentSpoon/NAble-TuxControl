@@ -34,31 +34,38 @@ class Dependency:
 DEPENDENCIES = (
     Dependency(
         "wine", "Wine", ("wine",),
-        {"arch": ("wine",), "debian": ("wine",), "fedora": ("wine",), "suse": ("wine",)},
+        {"arch": ("wine",), "debian": ("wine",), "fedora": ("wine",), "suse": ("wine",),
+         "void": ("wine",), "solus": ("wine",), "alpine": ("wine",)},
         True,
         "The Console and Viewer are Windows programs running under Wine.",
     ),
     Dependency(
         "gpg", "GnuPG", ("gpg", "gpg2"),
-        {"arch": ("gnupg",), "debian": ("gpg",), "fedora": ("gnupg2",), "suse": ("gpg2",)},
+        {"arch": ("gnupg",), "debian": ("gpg",), "fedora": ("gnupg2",), "suse": ("gpg2",),
+         "void": ("gnupg",), "solus": ("gnupg",), "alpine": ("gnupg",)},
         True,
         "N-able's scripts require gpg (it replaced gpgv2 in their 2025 update).",
     ),
     Dependency(
         "xdg", "xdg-utils", ("xdg-mime",),
-        {"arch": ("xdg-utils",), "debian": ("xdg-utils",), "fedora": ("xdg-utils",), "suse": ("xdg-utils",)},
+        {"arch": ("xdg-utils",), "debian": ("xdg-utils",), "fedora": ("xdg-utils",),
+         "suse": ("xdg-utils",), "void": ("xdg-utils",), "solus": ("xdg-utils",),
+         "alpine": ("xdg-utils",)},
         True,
         "Registers the browser link handler so N-central/N-sight can launch the Viewer.",
     ),
     Dependency(
         "curl", "curl", ("curl", "wget"),
-        {"arch": ("curl",), "debian": ("curl",), "fedora": ("curl",), "suse": ("curl",)},
+        {"arch": ("curl",), "debian": ("curl",), "fedora": ("curl",), "suse": ("curl",),
+         "void": ("curl",), "solus": ("curl",), "alpine": ("curl",)},
         False,
         "Installer scripts commonly download components with curl or wget.",
     ),
     Dependency(
         "winetricks", "winetricks", ("winetricks",),
-        {"arch": ("winetricks",), "debian": ("winetricks",), "fedora": ("winetricks",), "suse": ("winetricks",)},
+        {"arch": ("winetricks",), "debian": ("winetricks",), "fedora": ("winetricks",),
+         "suse": ("winetricks",), "void": ("winetricks",), "solus": ("winetricks",),
+         "alpine": ("winetricks",)},
         False,
         "Handy for fixing fonts or runtimes inside the Wine prefix. Optional.",
     ),
@@ -90,11 +97,21 @@ def install_command(family: str, packages) -> list:
         return ["pacman", "-S", "--needed", "--noconfirm", *pkgs]
     if family == "debian":
         joined = " ".join(shlex.quote(p) for p in pkgs)
+        # Wine on Debian/Ubuntu requires 32-bit userspace; enable it first.
+        if "wine" in pkgs:
+            return ["sh", "-c",
+                    f"dpkg --add-architecture i386 && apt-get update && apt-get install -y {joined}"]
         return ["sh", "-c", f"apt-get update && apt-get install -y {joined}"]
     if family == "fedora":
         return ["dnf", "install", "-y", *pkgs]
     if family == "suse":
         return ["zypper", "--non-interactive", "install", *pkgs]
+    if family == "void":
+        return ["xbps-install", "-Sy", *pkgs]
+    if family == "solus":
+        return ["eopkg", "install", "-y", *pkgs]
+    if family == "alpine":
+        return ["apk", "add", "--no-cache", *pkgs]
     raise ValueError(f"no package manager known for family {family!r}")
 
 

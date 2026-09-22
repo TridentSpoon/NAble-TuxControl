@@ -20,11 +20,16 @@ _TERMINALS = (
     ("kgx", ["kgx", "--"]),
     ("ptyxis", ["ptyxis", "--new-window", "--"]),
     ("xfce4-terminal", ["xfce4-terminal", "-x"]),
+    ("mate-terminal", ["mate-terminal", "-x"]),
+    ("lxterminal", ["lxterminal", "-e"]),
     ("tilix", ["tilix", "-e"]),
+    ("terminator", ["terminator", "-x"]),
     ("alacritty", ["alacritty", "-e"]),
     ("kitty", ["kitty"]),
     ("foot", ["foot"]),
     ("wezterm", ["wezterm", "start", "--"]),
+    ("urxvt", ["urxvt", "-e"]),
+    ("rxvt", ["rxvt", "-e"]),
     ("xterm", ["xterm", "-e"]),
     ("x-terminal-emulator", ["x-terminal-emulator", "-e"]),
 )
@@ -39,6 +44,10 @@ def _desktop_preference() -> tuple:
         return ("ptyxis", "kgx", "gnome-terminal")
     if "xfce" in desktop:
         return ("xfce4-terminal",)
+    if "mate" in desktop:
+        return ("mate-terminal",)
+    if "lxqt" in desktop or "lxde" in desktop:
+        return ("lxterminal",)
     return ()
 
 
